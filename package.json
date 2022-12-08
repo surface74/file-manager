@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "RS School NodeJS 2022Q4 task#2",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node src/index.js"
   },
