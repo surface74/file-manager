@@ -1,21 +1,33 @@
+import os from 'node:os';
 import * as readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
+import { join, resolve } from 'node:path';
 
 import * as CONST from './constants.js'
-import {getArgValue} from './args.js'
-
-console.log('process.argv: ', process.argv);
+import { getArgValue } from './args.js'
 
 const app = async () => {
-  const currentUser = getArgValue(process.argv, 'username');// || process.env.USERNAME;
+  const currentUser = getArgValue(process.argv, 'username') || process.env.USERNAME || 'Anonymous';
   console.log(CONST.welcomeMask.replace('%%USER%%', currentUser));
 
-  const rl = readline.createInterface({ input, output });
+  const currentPath = resolve(process.env.HOMEPATH);
+  printCurrentPath(currentPath);
 
+  const rl = readline.createInterface({ input, output });
+  rl.prompt();
   // rl.write(CONST.welcomeMask.replace('%%USER%%', currentUser));
 
   rl.on('line', (input) => {
-    console.log(`Received: ${input}`);
+    const commandArgs = getNormalizedArgs(input);
+    try {
+      switch (commandArgs[0]) {
+        default:
+      }
+    } catch (error) {
+      rl.write(error.message + os.EOL);
+    }
+    printCurrentPath(currentPath);
+    rl.prompt();
   });
 
   // rl.on('SIGINT', () => {
@@ -27,10 +39,6 @@ const app = async () => {
   //   })
   // });
 
-  // rl.write(CONST.currentPathMask);
-    // rl.setPrompt('>');
-    // rl.prompt(true);
-  // rl.write(data[, key])
 
 
   // console.log(`Thank you for your valuable feedback: ${answer}`);
@@ -39,3 +47,8 @@ const app = async () => {
 };
 
 app();
+
+function printCurrentPath(currentPath) {
+  console.log(CONST.currentPathMask.replace('%%CURRENT_PATH%%', currentPath));
+}
+
