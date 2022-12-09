@@ -4,7 +4,7 @@ import { join, resolve } from 'node:path';
 
 import * as msg from './messages.js'
 import { getArgValue, getNormalizedArgs } from './args.js'
-import * as errorMessage from './error.js';
+import { InvalidArgumentError, OperationFailedError, WrongDoubleQuotersError } from './error.js';
 import { color } from './colors.js';
 
 const app = async () => {
@@ -22,17 +22,23 @@ const app = async () => {
   rl.prompt();
 
   rl.on('line', (input) => {
-    const args = getNormalizedArgs(input);
     try {
+      const args = getNormalizedArgs(input);
       switch (args[0]?.toLowerCase()) {
         case '.exit':
           rl.close();
           break;
         default:
-          console.colored(color.red, msg.invalidInput);
+          throw new InvalidArgumentError();
       }
     } catch (error) {
-      console.colored(color.red, `${errorMessage.errorDefault}: ${error.message}${os.EOL}`);
+      if (error instanceof InvalidArgumentError ||
+        error instanceof OperationFailedError ||
+        error instanceof WrongDoubleQuotersError) {
+        console.colored(color.red, error.message);
+      } else {
+        throw error;
+      }
     }
     printCurrentPath(currentPath);
     rl.prompt();

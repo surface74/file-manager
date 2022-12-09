@@ -1,4 +1,4 @@
-import * as errorMessage from './error.js';
+import { WrongDoubleQuotersError } from './error.js';
 
 export const getArgValue = (args, key) => {
   const regex = new RegExp(`--${key}=.+`, 'i');
@@ -9,7 +9,7 @@ export const getArgValue = (args, key) => {
 export function getNormalizedArgs(commandLine) {
   const doubleQuotersCount = commandLine.match(/"/g);
   if (doubleQuotersCount && doubleQuotersCount.length % 2 !== 0) {
-    throw new Error(errorMessage.errorDoubleQuoters);
+    throw new WrongDoubleQuotersError();
   }
   const parts = commandLine.trim().split(' ');
   const args = [];
