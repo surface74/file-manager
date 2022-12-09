@@ -9,7 +9,7 @@ import { color } from './colors.js';
 
 const app = async () => {
   const currentUser = getArgValue(process.argv, 'username') || process.env.USERNAME || 'Anonymous';
-  console.log(msg.welcomeMask.replace('%%USER%%', currentUser));
+  sayHi(currentUser);
 
   const currentPath = resolve(process.env.HOMEPATH);
   printCurrentPath(currentPath);
@@ -24,33 +24,38 @@ const app = async () => {
   rl.on('line', (input) => {
     const args = getNormalizedArgs(input);
     try {
-      switch (args[0].toLowerCase()) {
+      switch (args[0]?.toLowerCase()) {
         case '.exit':
           rl.close();
           break;
         default:
-          console.log(setColor(msg.invalidInput, color.red));
+          console.colored(color.red, msg.invalidInput);
       }
     } catch (error) {
-      console.log(setColor(`${errorMessage.errorDefault}: ${error.message}${os.EOL}`, color.red));
+      console.colored(color.red, `${errorMessage.errorDefault}: ${error.message}${os.EOL}`);
     }
     printCurrentPath(currentPath);
     rl.prompt();
   });
 
   rl.on('close', () => {
+    console.log();
     sayGooogbye(currentUser);
   });
 };
 
 app();
 
+function sayHi(currentUser) {
+  console.colored(color.green, msg.welcomeMask.replace('%%USER%%', currentUser));
+}
+
 function printCurrentPath(currentPath) {
   console.log(msg.currentPathMask.replace('%%CURRENT_PATH%%', currentPath));
 }
 
 function sayGooogbye(currentUser) {
-  console.log(msg.goodbyMask.replace('%%USER%%', currentUser));
+  console.colored(color.green, msg.goodbyMask.replace('%%USER%%', currentUser));
   process.exit(0);
 }
 
