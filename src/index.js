@@ -2,16 +2,18 @@ import os from 'node:os';
 import * as readline from 'node:readline/promises';
 import { join, resolve } from 'node:path';
 
+import * as navigation from './navigation.js';
+
 import * as msg from './messages.js'
 import { getArgValue, getNormalizedArgs } from './args.js'
 import { InvalidArgumentError, OperationFailedError, WrongDoubleQuotersError } from './error.js';
-import { color } from './colors.js';
+import { color, setColor } from './colors.js';
 
 const app = async () => {
   const currentUser = getArgValue(process.argv, 'username') || process.env.USERNAME || 'Anonymous';
   sayHi(currentUser);
 
-  const currentPath = resolve(process.env.HOMEPATH);
+  let currentPath = resolve(process.env.HOMEPATH);
   printCurrentPath(currentPath);
 
   const rl = readline.createInterface({
@@ -22,14 +24,15 @@ const app = async () => {
   rl.prompt();
 
   rl.on('line', (input) => {
+    const args = getNormalizedArgs(input);
+    const command = args[0]?.toLowerCase();
     try {
-      const args = getNormalizedArgs(input);
-      switch (args[0]?.toLowerCase()) {
-        case '.exit':
-          rl.close();
-          break;
-        default:
-          throw new InvalidArgumentError();
+      if (navigation[command]) {
+        currentPath = navigation[command](args, currentPath); //navigation & working directory
+      } else if (command === '.exit') {
+        rl.close();
+      } else {
+        throw new InvalidArgumentError();
       }
     } catch (error) {
       if (error instanceof InvalidArgumentError ||
@@ -40,6 +43,7 @@ const app = async () => {
         throw error;
       }
     }
+
     printCurrentPath(currentPath);
     rl.prompt();
   });
@@ -57,7 +61,7 @@ function sayHi(currentUser) {
 }
 
 function printCurrentPath(currentPath) {
-  console.log(msg.currentPathMask.replace('%%CURRENT_PATH%%', currentPath));
+  console.log(msg.currentPathMask.replace('%%CURRENT_PATH%%', setColor(currentPath, color.cyan)));
 }
 
 function sayGooogbye(currentUser) {

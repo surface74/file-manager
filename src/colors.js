@@ -1,9 +1,17 @@
+/**
+ *https://en.m.wikipedia.org/wiki/ANSI_escape_code#Colors
+ */
 export const color = {
   red: 31,
   green: 32,
   yellow: 33,
+  blue: 34,
+  magenta: 35,
+  cyan: 36,
   white: 37
 }
+
+export const setColor = (string, color) => (color) ? `\x1b[${color}m${string}\x1b[0m` : string;
 
 console.colored = (color, ...args) => {
   if (color) {
@@ -24,5 +32,4 @@ console.colored = (color, ...args) => {
   console.log(...args);
 }
 
-export const setColor = (string, color) => (color) ? `\x1b[${color}m${string}\x1b[0m` : string;
 

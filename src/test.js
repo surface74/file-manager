@@ -1,6 +1,16 @@
+import { fileURLToPath } from 'node:url';
+import * as path from 'node:path';
 
-import { color } from './colors.js';
-console.colored(color.yello, 'Test', 'Second');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+console.log('__dirname: ', __dirname);
+console.log('import.meta.url: ', import.meta.url);
+console.log('path.isAbsolute(import.meta.url): ', path.isAbsolute(import.meta.url));
+console.log('path.dirname: ', path.dirname(__dirname));
+console.log('path.dirname("d:\\"): ', path.dirname(path.dirname('d:\\')));
+
+
+// import { color } from './colors.js';
+// console.colored(color.yellow, 'Test', 'Second');
 
 
 // import { getNormalizedArgs } from './args.js';
