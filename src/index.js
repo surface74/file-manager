@@ -21,18 +21,23 @@ const app = async () => {
   rl.prompt();
 
   rl.on('line', (input) => {
-    const args = getNormalizedArgs(input);
-    try {
-      switch (args[0].toLowerCase()) {
-        case '.exit':
-          rl.close();
-          break;
-        default:
+    if (!input.startsWith(msg.invalidInput)) {
+      const args = getNormalizedArgs(input);
+      try {
+        switch (args[0].toLowerCase()) {
+          case '.exit':
+            rl.close();
+            break;
+          default:
+            console.log(msg.invalidInput);
+        }
+      } catch (error) {
+        console.log(`${errorMessage.errorDefault}: ${error.message}${os.EOL}`);
       }
-    } catch (error) {
-      rl.write(`${errorMessage.errorDefault}: ${error.message}${os.EOL}`);
+      printCurrentPath(currentPath);
+    } else {
+      process.stderr.write('Really invali');
     }
-    printCurrentPath(currentPath);
     rl.prompt();
   });
 
