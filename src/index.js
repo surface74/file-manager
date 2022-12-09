@@ -5,6 +5,7 @@ import { join, resolve } from 'node:path';
 import * as msg from './messages.js'
 import { getArgValue, getNormalizedArgs } from './args.js'
 import * as errorMessage from './error.js';
+import { color } from './colors.js';
 
 const app = async () => {
   const currentUser = getArgValue(process.argv, 'username') || process.env.USERNAME || 'Anonymous';
@@ -21,23 +22,19 @@ const app = async () => {
   rl.prompt();
 
   rl.on('line', (input) => {
-    if (!input.startsWith(msg.invalidInput)) {
-      const args = getNormalizedArgs(input);
-      try {
-        switch (args[0].toLowerCase()) {
-          case '.exit':
-            rl.close();
-            break;
-          default:
-            console.log(msg.invalidInput);
-        }
-      } catch (error) {
-        console.log(`${errorMessage.errorDefault}: ${error.message}${os.EOL}`);
+    const args = getNormalizedArgs(input);
+    try {
+      switch (args[0].toLowerCase()) {
+        case '.exit':
+          rl.close();
+          break;
+        default:
+          console.log(setColor(msg.invalidInput, color.red));
       }
-      printCurrentPath(currentPath);
-    } else {
-      process.stderr.write('Really invali');
+    } catch (error) {
+      console.log(setColor(`${errorMessage.errorDefault}: ${error.message}${os.EOL}`, color.red));
     }
+    printCurrentPath(currentPath);
     rl.prompt();
   });
 

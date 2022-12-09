@@ -1,6 +1,7 @@
-import * as messages from './messages.js';
 
-console.log(messages.get(messages.welcomeMask, 'USER', 'Serge'));
+import { color } from './colors.js';
+console.colored(color.yello, 'Test', 'Second');
+
 
 // import { getNormalizedArgs } from './args.js';
 
