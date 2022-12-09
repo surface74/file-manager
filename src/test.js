@@ -1,17 +1,21 @@
-import { getNormalizedArgs } from './args.js';
-console.log(process.argv);
-console.log([...process.argv.slice(2)]);
+import * as messages from './messages.js';
 
-let commandLine = 'copy '
-console.log(getNormalizedArgs(commandLine));
-commandLine = '  copy   D:\\text.txt C:\\';
-console.log(getNormalizedArgs(commandLine));
-commandLine = 'copy D:\\text.txt C:\\';
-console.log(getNormalizedArgs(commandLine));
-commandLine = 'copy "D:\\Storage    arch\\text.txt" C:\\';
-console.log(getNormalizedArgs(commandLine));
-commandLine = 'copy false  0  null --force " D:\\Storage    arch\\text.txt" C:\\';
-console.log(getNormalizedArgs(commandLine));
+console.log(messages.get(messages.welcomeMask, 'USER', 'Serge'));
+
+// import { getNormalizedArgs } from './args.js';
+
+// let commandLine = 'copy '
+// console.log(getNormalizedArgs(commandLine));
+// commandLine = '  copy   D:\\text.txt C:\\';
+// console.log(getNormalizedArgs(commandLine));
+// commandLine = 'copy D:\\text.txt C:\\';
+// console.log(getNormalizedArgs(commandLine));
+// commandLine = 'copy "D:\\Storage    arch\\text.txt" C:\\';
+// console.log(getNormalizedArgs(commandLine));
+// commandLine = 'copy false  0  null --force " D:\\Storage    arch\\text.txt" C:\\';
+// console.log(getNormalizedArgs(commandLine));
+// commandLine = '';
+// console.log(getNormalizedArgs(commandLine)[0]);
 
 // console.log(getNormalizedArgs([...process.argv.slice(2)]));
 // import {getArgValue} from './args.js'
