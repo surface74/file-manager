@@ -4,9 +4,11 @@ import * as path from 'node:path';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 console.log('__dirname: ', __dirname);
 console.log('import.meta.url: ', import.meta.url);
-console.log('path.isAbsolute(import.meta.url): ', path.isAbsolute(import.meta.url));
-console.log('path.dirname: ', path.dirname(__dirname));
-console.log('path.dirname("d:\\"): ', path.dirname(path.dirname('d:\\')));
+console.log('path.resolve(..): ', path.resolve('..'));
+console.log('path.normalize("fileURLToPath(import.meta.url)"): ', path.normalize(fileURLToPath(import.meta.url)));
+
+console.log('path.isAbsolute(path.resolve("..")): ', path.isAbsolute(path.resolve('..')));
+
 
 
 // import { color } from './colors.js';

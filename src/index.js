@@ -1,6 +1,6 @@
 import os from 'node:os';
 import * as readline from 'node:readline/promises';
-import { join, resolve } from 'node:path';
+import { resolve } from 'node:path';
 
 import * as navigation from './navigation.js';
 
