@@ -1,9 +1,9 @@
-import { dirname } from 'node:path';
+import * as path from 'node:path';
 import { InvalidArgumentError, OperationFailedError, WrongDoubleQuotersError } from './error.js';
 
 
-export const up = (args, currentPath) => {
-  return dirname(currentPath);
+export const up = currentPath => {
+  return path.dirname(currentPath);
 }
 
 export const cd = (args, currentPath) => {
@@ -11,15 +11,20 @@ export const cd = (args, currentPath) => {
     throw new InvalidArgumentError('no path');
   }
 
-  const destination = args[1];
+  let destination = args[1];
 
   if (destination === '..') {
-    return up(args, currentPath);
+    return up(currentPath);
   }
 
-  if (path.isAbsolute()) {
-
-  } else {
-
+  if (destination.match(/^[\/]$/) !== null) {
+    return path.parse(currentPath).root;
   }
+
+
+  if (!path.isAbsolute(destination)) {
+    destination = path.join(currentPath, path.normalize(destination)));
+  }
+  console.log('destination: ', destination);
+  return currentPath;
 }
