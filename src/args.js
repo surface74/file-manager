@@ -9,7 +9,7 @@ export const getArgValue = (args, key) => {
 export function getNormalizedArgs(commandLine) {
   const doubleQuotersCount = commandLine.match(/"/g);
   if (doubleQuotersCount && doubleQuotersCount.length % 2 !== 0) {
-    throw new WrongDoubleQuotersError();
+    return [new WrongDoubleQuotersError(), null];
   }
   const parts = commandLine.trim().split(' ');
   const args = [];
@@ -25,5 +25,5 @@ export function getNormalizedArgs(commandLine) {
       args.push(arg);
     }
   }
-  return args;
+  return [null, args];
 }

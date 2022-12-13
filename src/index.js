@@ -25,29 +25,32 @@ const app = async () => {
   rl.prompt();
 
   rl.on('line', async (input) => {
-    const args = getNormalizedArgs(input);
+    let [error, result] = [null, null];
+    [error, args] = getNormalizedArgs(input);
+    if (error) {
+      handleError(error);
+    }
     const command = args[0]?.toLowerCase();
-    try {
-      if (navigation[command]) {
-        currentPath = navigation[command](args, currentPath); //navigation & working directory
-      } else if (filesCommand[command]) {
-        const [error, result] = await (filesCommand[command])(currentPath, args);
-        if (error) {
-          throw error;
-        }
-      } else if (command === '.exit') {
-        rl.close();
-      } else {
-        throw new InvalidArgumentError();
-      }
-    } catch (error) {
-      console.log('catched in index.js');
+
+    if (navigation[command]) {
+      currentPath = navigation[command](args, currentPath); //navigation & working directory
+
+    } else if (filesCommand[command]) {
+      [error, result] = await filesCommand[command](currentPath, args);
+
+    } else if (command === '.exit') {
+      rl.close();
+
+    } else {
+      throw new InvalidArgumentError('unknown command');
+    }
+
+    if (error) {
       if (error instanceof InvalidArgumentError ||
         error instanceof OperationFailedError ||
         error instanceof WrongDoubleQuotersError) {
         console.colored(color.red, error.message);
       } else {
-        console.log('didnt catched!');
         throw error;
       }
     }

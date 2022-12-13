@@ -23,7 +23,7 @@ export const cd = (args, currentPath) => {
 
 
   if (!path.isAbsolute(destination)) {
-    destination = path.join(currentPath, path.normalize(destination)));
+    destination = path.join(currentPath, path.normalize(destination));
   }
   console.log('destination: ', destination);
   return currentPath;

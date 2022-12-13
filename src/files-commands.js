@@ -6,7 +6,13 @@ import { stdout } from 'node:process';
 
 import { InvalidArgumentError, OperationFailedError, WrongDoubleQuotersError } from './error.js';
 
-export const cat = async (currentPath, [, fileName]) => {
+// export const files = async (currentPath, args) => {
+//   const command = args[0].toLowerCase();
+//   const [error, result] = await (command)(currentPath, args);
+//   return [error, result];
+// }
+
+export const cat = (currentPath, [, fileName]) => {
   if (!fileName) {
     return [new InvalidArgumentError(), false];
   }
@@ -21,6 +27,7 @@ export const cat = async (currentPath, [, fileName]) => {
   readStream.on('error', error => {
     return [new OperationFailedError(error.message), false];
   });
-  // createReadStream(fullPath).pipe(stdout);
+  createReadStream(fullPath).pipe(stdout);
+
 };
 // https://www.youtube.com/shorts/ITogH7lJTyE
