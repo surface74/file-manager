@@ -3,6 +3,7 @@ import * as readline from 'node:readline/promises';
 import { resolve } from 'node:path';
 
 import * as navigation from './navigation.js';
+import * as filesCommand from './files-commands.js';
 
 import * as msg from './messages.js'
 import { getArgValue, getNormalizedArgs } from './args.js'
@@ -23,23 +24,30 @@ const app = async () => {
 
   rl.prompt();
 
-  rl.on('line', (input) => {
+  rl.on('line', async (input) => {
     const args = getNormalizedArgs(input);
     const command = args[0]?.toLowerCase();
     try {
       if (navigation[command]) {
         currentPath = navigation[command](args, currentPath); //navigation & working directory
+      } else if (filesCommand[command]) {
+        const [error, result] = await (filesCommand[command])(currentPath, args);
+        if (error) {
+          throw error;
+        }
       } else if (command === '.exit') {
         rl.close();
       } else {
         throw new InvalidArgumentError();
       }
     } catch (error) {
+      console.log('catched in index.js');
       if (error instanceof InvalidArgumentError ||
         error instanceof OperationFailedError ||
         error instanceof WrongDoubleQuotersError) {
         console.colored(color.red, error.message);
       } else {
+        console.log('didnt catched!');
         throw error;
       }
     }
@@ -53,6 +61,7 @@ const app = async () => {
     sayGooogbye(currentUser);
   });
 };
+
 
 app();
 
