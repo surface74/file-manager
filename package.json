@@ -5,8 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js",
-    "test": "node src/test.js"
+    "start": "node src/index.js -- --username=Anonim",
+    "test": "node src/test.js",
+    "debug": "node --inspect src/index.js"
   },
   "repository": {
     "type": "git",

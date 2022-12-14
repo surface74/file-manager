@@ -13,7 +13,7 @@ export const color = {
 
 export const setColor = (string, color) => (color) ? `\x1b[${color}m${string}\x1b[0m` : string;
 
-console.colored = (color, ...args) => {
+console.colorLog = (color, ...args) => {
   if (color) {
     if (args[0]) {
       if (typeof (args[0] === 'string')) {

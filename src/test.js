@@ -12,7 +12,7 @@ console.log('path.isAbsolute(path.resolve("..")): ', path.isAbsolute(path.resolv
 
 
 // import { color } from './colors.js';
-// console.colored(color.yellow, 'Test', 'Second');
+// console.colorLog(color.yellow, 'Test', 'Second');
 
 
 // import { getNormalizedArgs } from './args.js';

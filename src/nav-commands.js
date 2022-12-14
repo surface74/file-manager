@@ -8,17 +8,17 @@ export const up = currentPath => {
 
 export const cd = (args, currentPath) => {
   if (args.length < 2) {
-    throw new InvalidArgumentError('no path');
+    return [new InvalidArgumentError('no path'), null];
   }
 
   let destination = args[1];
 
   if (destination === '..') {
-    return up(currentPath);
+    return [null, up(currentPath)];
   }
 
   if (destination.match(/^[\/]$/) !== null) {
-    return path.parse(currentPath).root;
+    return [null, path.parse(currentPath).root];
   }
 
 
@@ -26,5 +26,5 @@ export const cd = (args, currentPath) => {
     destination = path.join(currentPath, path.normalize(destination));
   }
   console.log('destination: ', destination);
-  return currentPath;
+  return [null, currentPath];
 }
