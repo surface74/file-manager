@@ -27,6 +27,11 @@ export const cd = (args, currentPath) => {
     destination = destination + path.sep;
   }
 
+  const result = destination.match(/^\.[\\/]?/);
+  if (result) {
+    destination = destination.slice(result[0].length);
+  }
+
   if (!path.isAbsolute(destination)) {
     destination = path.join(currentPath, path.normalize(destination));
   }

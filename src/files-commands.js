@@ -22,6 +22,8 @@ export const cat = (currentPath, [, fileName]) => {
 
     readStream.on('error', error => resolve([new OperationFailedError(error.message), false]));
 
-    readStream.on('end', () => resolve([null, true]));
+    readStream.on('end', () => {
+      console.log();
+      return resolve([null, true])});
   })
 };
