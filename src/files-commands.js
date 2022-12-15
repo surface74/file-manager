@@ -10,6 +10,12 @@ export const cat = (currentPath, [, fileName]) => {
     if (!fileName) {
       resolve ([new InvalidArgumentError(), false]);
     }
+
+    const result = fileName.match(/^\.[\\/]?/);
+    if (result) {
+      fileName = fileName.slice(result[0].length);
+    }
+
     let fullPath = path.normalize(fileName);
 
     if (!path.isAbsolute(fullPath)) {
