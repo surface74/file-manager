@@ -1,8 +1,6 @@
 import * as path from 'node:path';
 import { InvalidArgumentError, OperationFailedError, WrongDoubleQuotersError } from './error.js';
 import { readdirSync } from 'node:fs';
-import { dir } from 'node:console';
-
 
 export const up = currentPath => {
   return [null, path.dirname(currentPath)];
