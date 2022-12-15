@@ -32,9 +32,11 @@ const app = async () => {
 
       if (nav[command]) {
         [error, currentPath] = nav[command](args, currentPath); //navigation & working directory
+        // result = nav[command](args, currentPath); //navigation & working isDirectory
+        // console.log('result: ', result);
 
       } else if (files[command]) {
-        await files[command](currentPath, args)
+        await files[command](currentPath, args) //operations with files
           .then(result => { error = result[0] });
 
       } else if (command === '.exit') {
