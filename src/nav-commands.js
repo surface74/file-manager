@@ -1,6 +1,7 @@
 import * as path from 'node:path';
 import { InvalidArgumentError, OperationFailedError, WrongDoubleQuotersError } from './error.js';
 import { readdirSync } from 'node:fs';
+import { dir } from 'node:console';
 
 
 export const up = currentPath => {
@@ -31,8 +32,30 @@ export const cd = (args, currentPath) => {
   }
 
   try {
-    readdirSync(destination, { withFileTypes: true });
+    readdirSync(destination);
     return [null, destination];
+  } catch (error) {
+    return [new InvalidArgumentError(error.message), currentPath];
+  }
+}
+
+export const ls = (args, currentPath) => {
+  try {
+    const entities = readdirSync(currentPath, { withFileTypes: true });
+    const dirs = [];
+    const files = [];
+    for (const entity of entities) {
+      if (entity.isFile()) {
+        files.push({ Name: entity.name, Type: 'file' });
+      } else if (entity.isDirectory()) {
+        dirs.push({ Name: entity.name, Type: 'directory' })
+      }
+    }
+    console.log('dirs: ', dirs);
+    dirs.sort((item1, item2) => item1.Name.localeCompare(item2.Name));
+    files.sort((item1, item2) => item1.Name.localeCompare(item2.Name));
+    console.table([...dirs, ...files], ['Name', 'Type']);
+    return [null, currentPath];
   } catch (error) {
     return [new InvalidArgumentError(error.message), currentPath];
   }
