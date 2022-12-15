@@ -30,13 +30,13 @@ const app = async () => {
     if (!error) {
       const command = args[0]?.toLowerCase();
 
-      if (nav[command]) {
-        [error, currentPath] = nav[command](args, currentPath); //navigation & working directory
+      if (nav[command]) { //navigation & working directory
+        [error, currentPath] = nav[command](args, currentPath);
 
-      } else if (files[command]) {
-        await files[command](currentPath, args) //operations with files
-          .then(result => result[1] )
-          .catch(result => { error = result[0]});
+      } else if (files[command]) { //operations with files
+        error = await files[command](currentPath, args)
+          .then(([err]) => err)
+          .catch(([err]) => err);
 
       } else if (command === '.exit') {
         rl.close();
@@ -78,6 +78,5 @@ function printCurrentPath(currentPath) {
 
 function sayGooogbye(currentUser) {
   console.colorLog(color.green, msg.goodbyMask.replace('%%USER%%', currentUser));
-  process.exit(0);
 }
 

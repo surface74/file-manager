@@ -2,7 +2,7 @@ import * as path from 'node:path';
 import { InvalidArgumentError, OperationFailedError, WrongDoubleQuotersError } from './error.js';
 import { readdirSync } from 'node:fs';
 
-export const up = currentPath => {
+export const up = (args, currentPath) => {
   return [null, path.dirname(currentPath)];
 }
 
@@ -54,7 +54,6 @@ export const ls = (args, currentPath) => {
         dirs.push({ Name: entity.name, Type: 'directory' })
       }
     }
-    console.log('dirs: ', dirs);
     dirs.sort((item1, item2) => item1.Name.localeCompare(item2.Name));
     files.sort((item1, item2) => item1.Name.localeCompare(item2.Name));
     console.table([...dirs, ...files], ['Name', 'Type']);

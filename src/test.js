@@ -1,15 +1,9 @@
-import { fileURLToPath } from 'node:url';
-import * as path from 'node:path';
+import {getNormalizedArgs} from './args.js'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-console.log('__dirname: ', __dirname);
-console.log('import.meta.url: ', import.meta.url);
-console.log('path.resolve(..): ', path.resolve('..'));
-console.log('path.normalize("fileURLToPath(import.meta.url)"): ', path.normalize(fileURLToPath(import.meta.url)));
+const cmd = 'add ""';
 
-console.log('path.isAbsolute(path.resolve("..")): ', path.isAbsolute(path.resolve('..')));
-
-
+getNormalizedArgs(cmd)
+console.log(`getNormalizedArgs(${cmd}): `, getNormalizedArgs(cmd));
 
 // import { color } from './colors.js';
 // console.colorLog(color.yellow, 'Test', 'Second');
