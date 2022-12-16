@@ -1,24 +1,26 @@
 import * as path from 'node:path';
-import { InvalidArgumentError, OperationFailedError, WrongDoubleQuotersError } from './error.js';
+import { InvalidArgumentError } from './error.js';
 import { readdirSync } from 'node:fs';
 
+import { Result } from './result.js'
+
 export const up = (args, currentPath) => {
-  return [null, path.dirname(currentPath)];
+  return new Result(null, path.dirname(currentPath));
 }
 
 export const cd = (args, currentPath) => {
   if (args.length < 2) {
-    return [new InvalidArgumentError(), currentPath];
+    return new Result(new InvalidArgumentError(), currentPath);
   }
 
   let destination = args[1];
 
   if (destination.match(/^\.\.[\\/]?$/) !== null) {
-    return [null, path.dirname(currentPath)];
+    return new Result(null, path.dirname(currentPath));
   }
 
   if (destination.match(/^[\\/]$/) !== null) {
-    return [null, path.parse(currentPath).root];
+    return new Result(null, path.parse(currentPath).root);
   }
 
   if (destination.endsWith(':')) {
@@ -36,9 +38,9 @@ export const cd = (args, currentPath) => {
 
   try {
     readdirSync(destination);
-    return [null, destination];
+    return new Result(null, destination);
   } catch (error) {
-    return [new InvalidArgumentError(error.message), currentPath];
+    return new Result(new InvalidArgumentError(error.message), currentPath);
   }
 }
 
@@ -57,8 +59,8 @@ export const ls = (args, currentPath) => {
     dirs.sort((item1, item2) => item1.Name.localeCompare(item2.Name));
     files.sort((item1, item2) => item1.Name.localeCompare(item2.Name));
     console.table([...dirs, ...files], ['Name', 'Type']);
-    return [null, currentPath];
+    return new Result(null, currentPath);
   } catch (error) {
-    return [new InvalidArgumentError(error.message), currentPath];
+    return new Result(new InvalidArgumentError(error.message), currentPath);
   }
 }

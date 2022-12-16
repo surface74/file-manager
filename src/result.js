@@ -1,12 +1,12 @@
 export class Result {
-  constructor(error, result) {
+  constructor(error, data) {
     this._error = error;
-    this._result = result;
+    this._data = data;
   }
   get error() {
     return this._error;
   }
-  get result() {
-    return this._result;
+  get data() {
+    return this._data;
   }
 }

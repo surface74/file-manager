@@ -5,7 +5,6 @@ import { join } from 'node:path';
 import * as nav from './nav-commands.js';
 import * as files from './files-commands.js';
 
-import { Result } from './result.js'
 import * as msg from './messages.js'
 import { getArgValue, getNormalizedArgs } from './args.js'
 import { InvalidArgumentError, OperationFailedError, WrongDoubleQuotersError } from './error.js';
@@ -26,18 +25,19 @@ const app = async () => {
   rl.prompt();
 
   rl.on('line', async (input) => {
-    let [error, args, result] = [null, null, null];
-    [error, args] = getNormalizedArgs(input);
+    let error, args;
+    ({ error, data: args } = getNormalizedArgs(input));
+
     if (!error) {
       const command = args[0]?.toLowerCase();
 
       if (nav[command]) { //navigation & working directory
-        [error, currentPath] = nav[command](args, currentPath);
+        ({ error, data: currentPath } = nav[command](args, currentPath));
 
       } else if (files[command]) { //operations with files
         error = await files[command](currentPath, args)
-          .then(([err]) => err)
-          .catch(([err]) => err);
+          .then((result) => result.error)
+          .catch((result) => result.error);
 
       } else if (command === '.exit') {
         rl.close();

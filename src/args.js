@@ -1,4 +1,5 @@
 import { WrongDoubleQuotersError, InvalidArgumentError } from './error.js';
+import { Result } from './result.js'
 
 export const getArgValue = (args, key) => {
   const regex = new RegExp(`--${key}=.+`, 'i');
@@ -8,12 +9,12 @@ export const getArgValue = (args, key) => {
 
 export function getNormalizedArgs(commandLine) {
   if (typeof commandLine !== 'string') {
-    return [new InvalidArgumentError('arguments have to be string'), null];
+    return new Result(new InvalidArgumentError('arguments have to be string'), null);
   }
   const doubleQuotersCount = commandLine.match(/"/g);
   if (commandLine.match(/""/) ||
     doubleQuotersCount && doubleQuotersCount.length % 2 !== 0) {
-    return [new WrongDoubleQuotersError(), null];
+    return new Result(new WrongDoubleQuotersError(), null);
   }
   let args = [];
   const cmd = commandLine.trim();
@@ -35,48 +36,5 @@ export function getNormalizedArgs(commandLine) {
     args = cmd.split(' ').map(item => item.trim()).filter(item => item);
   }
 
-  return [null, args];
-  // const parts = commandLine.trim().split(' ');
-  // console.log('parts: ', parts);
-  // // const args = [];
-  // for (let i = 0; i < parts.length; i++) {
-  //   let arg = parts[i];
-  //   if (arg.startsWith('"')) {
-  //     do {
-  //       arg += ` ${parts[++i]}`;
-  //     } while (!parts[i].endsWith('"'))
-  //     arg = arg.replace(/"/g, '').trim();
-  //   }
-  //   if (arg) {
-  //     args.push(arg);
-  //   }
-  // }
-  // return [null, args];
+  return new Result(null, args);
 }
-
-// export function getNormalizedArgs(commandLine) {
-//   if (typeof commandLine !== 'string') {
-//     return [new InvalidArgumentError('arguments have to be string'), null];
-//   }
-//   const doubleQuotersCount = commandLine.match(/"/g);
-//   if (commandLine.match(/""/) ||
-//     doubleQuotersCount && doubleQuotersCount.length % 2 !== 0) {
-//     return [new WrongDoubleQuotersError(), null];
-//   }
-//   const parts = commandLine.trim().split(' ');
-//   console.log('parts: ', parts);
-//   const args = [];
-//   for (let i = 0; i < parts.length; i++) {
-//     let arg = parts[i];
-//     if (arg.startsWith('"')) {
-//       do {
-//         arg += ` ${parts[++i]}`;
-//       } while (!parts[i].endsWith('"'))
-//       arg = arg.replace(/"/g, '').trim();
-//     }
-//     if (arg) {
-//       args.push(arg);
-//     }
-//   }
-//   return [null, args];
-// }
