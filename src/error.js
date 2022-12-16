@@ -1,6 +1,6 @@
 const operationFailed = 'Operation failed';
 const invalidInput = 'Invalid input';
-const wrongDoubleQuoters = 'Wrong double quoters count';
+const wrongDoubleQuoters = 'Wrong double quoters count/order';
 
 export class InvalidArgumentError extends Error {
   constructor(message) {

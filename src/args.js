@@ -1,4 +1,4 @@
-import { WrongDoubleQuotersError } from './error.js';
+import { WrongDoubleQuotersError, InvalidArgumentError } from './error.js';
 
 export const getArgValue = (args, key) => {
   const regex = new RegExp(`--${key}=.+`, 'i');
@@ -7,11 +7,16 @@ export const getArgValue = (args, key) => {
 }
 
 export function getNormalizedArgs(commandLine) {
+  if (typeof commandLine !== 'string') {
+    return [new InvalidArgumentError('arguments have to be string'), null];
+  }
   const doubleQuotersCount = commandLine.match(/"/g);
-  if (doubleQuotersCount && doubleQuotersCount.length % 2 !== 0) {
+  if (commandLine.match(/""/) ||
+    doubleQuotersCount && doubleQuotersCount.length % 2 !== 0) {
     return [new WrongDoubleQuotersError(), null];
   }
   const parts = commandLine.trim().split(' ');
+  console.log('parts: ', parts);
   const args = [];
   for (let i = 0; i < parts.length; i++) {
     let arg = parts[i];
