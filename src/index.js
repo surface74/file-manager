@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import * as nav from './nav-commands.js';
 import * as files from './files-commands.js';
 
+import { Result } from './result.js'
 import * as msg from './messages.js'
 import { getArgValue, getNormalizedArgs } from './args.js'
 import { InvalidArgumentError, OperationFailedError, WrongDoubleQuotersError } from './error.js';

@@ -24,7 +24,6 @@ export const cat = (currentPath, [, fileName]) => {
     }
 
     const readStream = createReadStream(fullPath);
-    console.log('fullPath: ', fullPath);
     readStream.pipe(stdout);
 
     readStream.on('error', error => reject([new OperationFailedError(error.message), false]));

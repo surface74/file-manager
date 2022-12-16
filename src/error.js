@@ -4,8 +4,7 @@ const wrongDoubleQuoters = 'Wrong double quoters count/order';
 
 export class InvalidArgumentError extends Error {
   constructor(message) {
-    const fullMessage = invalidInput + ((message) ? `: ${message}` : '')
-    super(fullMessage);
+    super(invalidInput + ((message) ? `: ${message}` : ''));
     this.name = this.constructor.name;
     // Error.captureStackTrace(this);
   }
