@@ -148,7 +148,7 @@ export const mv = async (currentPath, [source, destination]) => {
 }
 
 export const rm = (currentPath, [source]) => {
-  return new Promise((resolve, reject) => {Rm
+  return new Promise((resolve, reject) => {
     if (!source) {
       reject(new Result(new InvalidArgumentError(), false));
     }
