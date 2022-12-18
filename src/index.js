@@ -63,6 +63,7 @@ const app = async () => {
   rl.on('close', () => {
     console.log();
     sayGooogbye(currentUser);
+    process.exit(0);
   });
 };
 

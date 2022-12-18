@@ -1,10 +1,10 @@
 import * as path from 'path';
-import { createReadStream, createWriteStream, constants, existsSync, rename, access } from 'node:fs';
+import { createReadStream, createWriteStream, constants, rm, rename, access } from 'node:fs';
 import { stdout } from 'node:process';
 
 import { Result } from './result.js'
-import { color } from './colors.js';
 import { InvalidArgumentError, OperationFailedError } from './error.js';
+import { appendFile } from 'fs';
 
 
 export const cat = (currentPath, [, fileName]) => {
@@ -53,7 +53,6 @@ export const add = (currentPath, [, fileName]) => {
     writeStream.on('error', error => reject(new Result(new OperationFailedError(error.message), false)));
 
     writeStream.on('ready', () => {
-      console.colorLog(color.green, `File created: ${writeStream.path}`);
       writeStream.close();
       resolve(new Result(null, true))
     });
@@ -85,7 +84,6 @@ export const rn = (currentPath, args) => {
           if (err) {
             reject(new Result(new OperationFailedError(err.message), false));
           } else {
-            console.colorLog(color.green, `New file name: ${destinationFile}`);
             resolve(new Result(null, true));
           }
         });
@@ -94,7 +92,7 @@ export const rn = (currentPath, args) => {
   })
 };
 
-export const copy = (currentPath, args) => {
+export const cp = (currentPath, args) => {
   return new Promise((resolve, reject) => {
     if (args.length < 3) {
       reject(new Result(new InvalidArgumentError(), false));
@@ -118,16 +116,40 @@ export const copy = (currentPath, args) => {
       reject(new Result(new OperationFailedError(error.message), false)));
 
     writeStream.on('finish', () => {
-      console.colorLog(color.green, `File ${sourceFile} copied to ${destinationFile}`);
       resolve(new Result(null, true))
     });
 
     readStream.on('error', error =>
       reject(new Result(new OperationFailedError(error.message), false)));
-
-    // readStream.on('end', () => {
-    //   console.colorLog(color.green, `File ${sourceFile} has been read`);
-    //   resolve(new Result(null, true));
-    // });
   })
+}
+
+export const mv = async (currentPath, args) => {
+  if (args.length < 3) {
+    Promise.reject(new Result(new InvalidArgumentError(), false));
+  }
+
+  let sourceFile = path.normalize(args[1]);
+  if (!path.isAbsolute(sourceFile)) {
+    sourceFile = path.join(currentPath, sourceFile);
+  }
+
+  let destinationFile = path.join(args[2], path.basename(sourceFile));
+
+  const result = await cp(currentPath, [null, sourceFile, destinationFile])
+    .then(result => result)
+    .catch(result => result);
+
+  if (result.data) {
+    return new Promise((resolve, reject) => {
+      rm(sourceFile, err => {
+        if (err) {
+          reject(new Result(err, false));
+        }
+        resolve(new Result(null, true))
+      })
+    });
+  } else {
+    return Promise.reject(new Result(result.error, false));
+  }
 }
