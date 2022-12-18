@@ -4,16 +4,16 @@ import { readdirSync } from 'node:fs';
 
 import { Result } from './result.js'
 
-export const up = (args, currentPath) => {
+export const up = (currentPath) => {
   return new Result(null, path.dirname(currentPath));
 }
 
-export const cd = (args, currentPath) => {
-  if (args.length < 2) {
+export const cd = (currentPath, [destinationPath]) => {
+  if (!destinationPath) {
     return new Result(new InvalidArgumentError(), currentPath);
   }
 
-  let destination = args[1];
+  let destination = destinationPath;
 
   if (destination.match(/^\.\.[\\/]?$/) !== null) {
     return new Result(null, path.dirname(currentPath));
@@ -44,7 +44,7 @@ export const cd = (args, currentPath) => {
   }
 }
 
-export const ls = (args, currentPath) => {
+export const ls = (currentPath) => {
   try {
     const entities = readdirSync(currentPath, { withFileTypes: true });
     const dirs = [];
@@ -58,7 +58,7 @@ export const ls = (args, currentPath) => {
     }
     dirs.sort((item1, item2) => item1.Name.localeCompare(item2.Name));
     files.sort((item1, item2) => item1.Name.localeCompare(item2.Name));
-    console.table([...dirs, ...files], ['Name', 'Type']);
+    console.table([...dirs, ...files]);
     return new Result(null, currentPath);
   } catch (error) {
     return new Result(new InvalidArgumentError(error.message), currentPath);

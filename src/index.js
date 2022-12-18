@@ -31,10 +31,10 @@ const app = async () => {
     ({ error, data: args } = getNormalizedArgs(input));
 
     if (!error) {
-      const command = args[0]?.toLowerCase();
+      const command = args.shift().toLowerCase();
 
       if (nav[command]) { //navigation & working directory
-        ({ error, data: currentPath } = nav[command](args, currentPath));
+        ({ error, data: currentPath } = nav[command](currentPath, args));
 
       } else if (files[command]) { //operations with files
         error = await files[command](currentPath, args)
