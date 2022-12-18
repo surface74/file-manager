@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { createReadStream, createWriteStream, constants, rm, rename, access } from 'node:fs';
+import { createReadStream, createWriteStream, constants, rm as rmFs, rename, access } from 'node:fs';
 import { stdout } from 'node:process';
 
 import { Result } from './result.js'
@@ -62,7 +62,7 @@ export const add = (currentPath, [, fileName]) => {
 export const rn = (currentPath, args) => {
   return new Promise((resolve, reject) => {
     if (args.length < 3) {
-      reject(new Result(new InvalidArgumentError(), false));
+      reject(new Result(new InvalidArgumentError('must be at least 2 parameters'), false));
     }
 
     let sourceFile = path.normalize(args[1]);
@@ -95,7 +95,7 @@ export const rn = (currentPath, args) => {
 export const cp = (currentPath, args) => {
   return new Promise((resolve, reject) => {
     if (args.length < 3) {
-      reject(new Result(new InvalidArgumentError(), false));
+      reject(new Result(new InvalidArgumentError('must be at least 2 parameters'), false));
     }
 
     let sourceFile = path.normalize(args[1]);
@@ -126,7 +126,7 @@ export const cp = (currentPath, args) => {
 
 export const mv = async (currentPath, args) => {
   if (args.length < 3) {
-    Promise.reject(new Result(new InvalidArgumentError(), false));
+    Promise.reject(new Result(new InvalidArgumentError('must be at least 2 parameters'), false));
   }
 
   let sourceFile = path.normalize(args[1]);
@@ -140,16 +140,36 @@ export const mv = async (currentPath, args) => {
     .then(result => result)
     .catch(result => result);
 
-  if (result.data) {
+  if (!result.error) {
     return new Promise((resolve, reject) => {
-      rm(sourceFile, err => {
+      rmFs(sourceFile, err => {
         if (err) {
-          reject(new Result(err, false));
+          reject(new Result(new OperationFailedError(err.message), false));
         }
         resolve(new Result(null, true))
       })
     });
   } else {
-    return Promise.reject(new Result(result.error, false));
+    return Promise.reject(new Result(new OperationFailedError(result.error.message), false));
   }
+}
+
+export const rm = (currentPath, args) => {
+  return new Promise((resolve, reject) => {
+    if (args.length < 2) {
+      reject(new Result(new InvalidArgumentError('must be at least 1 parameter'), false));
+    }
+
+    let fileToDelete = path.normalize(args[1]);
+    if (!path.isAbsolute(fileToDelete)) {
+      fileToDelete = path.join(currentPath, fileToDelete);
+    }
+
+    rmFs(fileToDelete, err => {
+      if (err) {
+        reject(new Result(new InvalidArgumentError(err.message), false));
+      }
+      resolve(new Result(null, true))
+    })
+  })
 }
