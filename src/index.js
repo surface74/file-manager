@@ -34,7 +34,9 @@ const app = async () => {
       const command = args.shift().toLowerCase();
 
       if (nav[command]) { //navigation & working directory
-        ({ error, data: currentPath } = nav[command](currentPath, args));
+        ({ error: error, data: currentPath } = await nav[command](currentPath, args)
+        .then((result) => result)
+        .catch((result) => result));
 
       } else if (files[command]) { //operations with files
         error = await files[command](currentPath, args)
