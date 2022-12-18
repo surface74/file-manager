@@ -141,14 +141,18 @@ export const mv = async (currentPath, args) => {
     .catch(result => result);
 
   if (!result.error) {
-    return new Promise((resolve, reject) => {
-      rmFs(sourceFile, err => {
-        if (err) {
-          reject(new Result(new OperationFailedError(err.message), false));
-        }
-        resolve(new Result(null, true))
-      })
-    });
+    await rm(currentPath, [null, sourceFile])
+      .then(result => { resolve(result); })
+      .catch(result => { reject(result); })
+
+    // return new Promise((resolve, reject) => {
+    //   rmFs(sourceFile, err => {
+    //     if (err) {
+    //       reject(new Result(new OperationFailedError(err.message), false));
+    //     }
+    //     resolve(new Result(null, true))
+    //   })
+    // });
   } else {
     return Promise.reject(new Result(new OperationFailedError(result.error.message), false));
   }
