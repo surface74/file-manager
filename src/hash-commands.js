@@ -1,12 +1,12 @@
 import * as path from 'node:path';
-import { createReadStream, createWriteStream } from 'node:fs';
+import { createReadStream } from 'node:fs';
 import { stdout } from 'node:process';
 import { createHash } from 'node:crypto';
 
 import { Result } from './result.js';
 import { InvalidArgumentError, OperationFailedError } from './error.js';
 
-export const hash = (currentPath, [, fileName]) => {
+export const hash = (currentPath, [fileName]) => {
   return new Promise((resolve, reject) => {
     if (!fileName) {
       reject(new Result(new InvalidArgumentError(), false));
