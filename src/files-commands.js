@@ -1,10 +1,9 @@
-import * as path from 'path';
+import * as path from 'node:path';
 import { createReadStream, createWriteStream, constants, rm as rmFs, rename, access } from 'node:fs';
 import { stdout } from 'node:process';
 
-import { Result } from './result.js'
+import { Result } from './result.js';
 import { InvalidArgumentError, OperationFailedError } from './error.js';
-import { appendFile } from 'fs';
 
 
 export const cat = (currentPath, [, fileName]) => {
