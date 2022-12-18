@@ -82,9 +82,8 @@ export const rn = (currentPath, args) => {
         rename(sourceFile, destinationFile, (err) => {
           if (err) {
             reject(new Result(new OperationFailedError(err.message), false));
-          } else {
-            resolve(new Result(null, true));
           }
+          resolve(new Result(null, true));
         });
       }
     });
