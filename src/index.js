@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import * as nav from './nav-commands.js';
 import * as files from './files-commands.js';
-import { os } from './os-commands.js';
+import * as os from './os-commands.js';
 import * as hash from './hash-commands.js';
 import * as zip from './zip-commands.js';
 
@@ -41,8 +41,8 @@ const app = async () => {
           .then((result) => result.error)
           .catch((result) => result.error);
 
-      } else if ('os' === command) { //operations with OS's values
-        ({ error } = os(args));
+      } else if (os[command]) { //operations with OS's values
+        ({ error } = os[command](args));
 
       } else if (hash[command]) { //operations with hash
         error = await hash[command](currentPath, args)

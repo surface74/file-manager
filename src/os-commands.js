@@ -3,14 +3,14 @@ import { join } from 'node:path';
 
 import { Result } from './result.js';
 import { color } from './colors.js';
-import { InvalidArgumentError, OperationFailedError } from './error.js';
+import { InvalidArgumentError } from './error.js';
 
-export const os = (args) => {
-  if (!args[1] || !args[1].startsWith('--')) {
+export const os = ([dashedKey]) => {
+  if (!dashedKey?.startsWith('--')) {
     return new Result(new InvalidArgumentError('valid option has to start with "--"'), false);
   }
 
-  const key = args[1].slice(2).toLowerCase();
+  const key = dashedKey.slice(2).toLowerCase();
   switch (key) {
     case 'eol':
       // console.colorLog(color.green, `Default system End-Of-Line: ${JSON.stringify(nodeOs.EOL)}`);
@@ -34,7 +34,7 @@ export const os = (args) => {
       console.colorLog(color.green, `${process.arch}`);
       break;
     default:
-      return new Result(new InvalidArgumentError(`bad option ${args[1]}`), false);
+      return new Result(new InvalidArgumentError(`bad option ${dashedKey}`), false);
   }
   return new Result(null, true);
 }
