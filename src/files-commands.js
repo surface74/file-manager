@@ -1,12 +1,12 @@
 import * as path from 'node:path';
-import { createReadStream, createWriteStream, constants, rm as rmFs, rename, access } from 'node:fs';
+import { createReadStream, createWriteStream, constants, rm as fsRm, rename, access } from 'node:fs';
 import { stdout } from 'node:process';
 
 import { Result } from './result.js';
 import { InvalidArgumentError, OperationFailedError } from './error.js';
 
 
-export const cat = (currentPath, [, fileName]) => {
+export const cat = (currentPath, [fileName]) => {
   return new Promise((resolve, reject) => {
     if (!fileName) {
       reject(new Result(new InvalidArgumentError(), false));
@@ -35,14 +35,14 @@ export const cat = (currentPath, [, fileName]) => {
   })
 };
 
-export const add = (currentPath, [, fileName]) => {
+export const add = (currentPath, [fileName]) => {
   return new Promise((resolve, reject) => {
     if (!fileName) {
       reject(new Result(new InvalidArgumentError(), false));
     }
 
     if (path.isAbsolute(fileName) || fileName.match(/[\\/]+/)) {
-      reject(new Result(new InvalidArgumentError('a file can be created in current path only'), false));
+      reject(new Result(new InvalidArgumentError('file can be created in current path only'), false));
     }
 
     let fullPath = path.join(currentPath, path.normalize(fileName));
@@ -58,18 +58,18 @@ export const add = (currentPath, [, fileName]) => {
   })
 };
 
-export const rn = (currentPath, args) => {
+export const rn = (currentPath, [originName, resultName]) => {
   return new Promise((resolve, reject) => {
-    if (args.length < 3) {
-      reject(new Result(new InvalidArgumentError('must be at least 2 parameters'), false));
+    if (!resultName) {
+      reject(new Result(new InvalidArgumentError('must be passed 2 parameters'), false));
     }
 
-    let sourceFile = path.normalize(args[1]);
+    let sourceFile = path.normalize(originName);
     if (!path.isAbsolute(sourceFile)) {
       sourceFile = path.join(currentPath, sourceFile);
     }
 
-    let destinationFile = path.normalize(args[2]);
+    let destinationFile = path.normalize(resultName);
     if (destinationFile.match(/[\\/:]/)) {
       reject(new Result(new InvalidArgumentError('2nd parameter have to be the file name only'), false));
     }
@@ -90,23 +90,23 @@ export const rn = (currentPath, args) => {
   })
 };
 
-export const cp = (currentPath, args) => {
+export const cp = (currentPath, [source, destination]) => {
   return new Promise((resolve, reject) => {
-    if (args.length < 3) {
-      reject(new Result(new InvalidArgumentError('must be at least 2 parameters'), false));
+    if (!destination) {
+      reject(new Result(new InvalidArgumentError('must be passed 2 parameters'), false));
     }
 
-    let sourceFile = path.normalize(args[1]);
+    let sourceFile = path.normalize(source);
     if (!path.isAbsolute(sourceFile)) {
       sourceFile = path.join(currentPath, sourceFile);
     }
 
-    let destinationFile = path.normalize(args[2]);
+    let destinationFile = path.normalize(destination);
     if (!path.isAbsolute(destinationFile)) {
       destinationFile = path.join(currentPath, destinationFile);
     }
-    const readStream = new createReadStream(sourceFile, { flags: 'r' });
-    const writeStream = new createWriteStream(destinationFile, { flags: 'wx' });
+    const readStream = createReadStream(sourceFile, { flags: 'r' });
+    const writeStream = createWriteStream(destinationFile, { flags: 'wx' });
 
     readStream.pipe(writeStream);
 
@@ -122,24 +122,24 @@ export const cp = (currentPath, args) => {
   })
 }
 
-export const mv = async (currentPath, args) => {
-  if (args.length < 3) {
-    Promise.reject(new Result(new InvalidArgumentError('must be at least 2 parameters'), false));
+export const mv = async (currentPath, [source, destination]) => {
+  if (!destination) {
+    Promise.reject(new Result(new InvalidArgumentError('must be passed 2 parameters'), false));
   }
 
-  let sourceFile = path.normalize(args[1]);
+  let sourceFile = path.normalize(source);
   if (!path.isAbsolute(sourceFile)) {
     sourceFile = path.join(currentPath, sourceFile);
   }
 
-  let destinationFile = path.join(args[2], path.basename(sourceFile));
+  let destinationFile = path.join(destination, path.basename(sourceFile));
 
-  const result = await cp(currentPath, [null, sourceFile, destinationFile])
+  const result = await cp(currentPath, [sourceFile, destinationFile])
     .then(result => result)
     .catch(result => result);
 
   if (!result.error) {
-    await rm(currentPath, [null, sourceFile])
+    await rm(currentPath, [sourceFile])
       .then(result => { resolve(result); })
       .catch(result => { reject(result); })
   } else {
@@ -147,18 +147,18 @@ export const mv = async (currentPath, args) => {
   }
 }
 
-export const rm = (currentPath, args) => {
-  return new Promise((resolve, reject) => {
-    if (args.length < 2) {
-      reject(new Result(new InvalidArgumentError('must be at least 1 parameter'), false));
+export const rm = (currentPath, [source]) => {
+  return new Promise((resolve, reject) => {Rm
+    if (!source) {
+      reject(new Result(new InvalidArgumentError(), false));
     }
 
-    let fileToDelete = path.normalize(args[1]);
+    let fileToDelete = path.normalize(source);
     if (!path.isAbsolute(fileToDelete)) {
       fileToDelete = path.join(currentPath, fileToDelete);
     }
 
-    rmFs(fileToDelete, err => {
+    fsRm(fileToDelete, err => {
       if (err) {
         reject(new Result(new InvalidArgumentError(err.message), false));
       }
