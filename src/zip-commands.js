@@ -6,10 +6,10 @@ import { createBrotliCompress, createBrotliDecompress } from 'node:zlib';
 import { Result } from './result.js';
 import { InvalidArgumentError, OperationFailedError } from './error.js';
 
-export const compress = (currentPath, [, source, resultFile]) => {
+export const compress = (currentPath, [source, resultFile]) => {
   return new Promise((resolve, reject) => {
     if (!source) {
-      reject(new Result(new InvalidArgumentError('must be at least 1 parameters'), false));
+      reject(new Result(new InvalidArgumentError(), false));
     }
 
     let sourceFile = normalize(source);
@@ -41,10 +41,10 @@ export const compress = (currentPath, [, source, resultFile]) => {
   })
 };
 
-export const decompress = (currentPath, [, source, result]) => {
+export const decompress = (currentPath, [source, result]) => {
   return new Promise((resolve, reject) => {
-    if (!source || !result) {
-      reject(new Result(new InvalidArgumentError('must be at least 2 parameters'), false));
+    if (!result) {
+      reject(new Result(new InvalidArgumentError('must be passed 2 parameters'), false));
     }
 
     let compressedFile = normalize(source);
