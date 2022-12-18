@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import * as nav from './nav-commands.js';
 import * as files from './files-commands.js';
 import { os } from './os-commands.js';
+import * as hash from './hash-commands.js';
 
 import * as msg from './messages.js'
 import { getArgValue, getNormalizedArgs } from './args.js'
@@ -41,6 +42,11 @@ const app = async () => {
 
       } else if ('os' === command) { //operations with OS's values
         ({ error } = os(args));
+
+      } else if (hash[command]) { //operations with hash
+        error = await hash[command](currentPath, args)
+          .then((result) => result.error)
+          .catch((result) => result.error);
 
       } else if (command === '.exit') {
         rl.close();
