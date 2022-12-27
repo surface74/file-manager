@@ -134,17 +134,18 @@ export const mv = async (currentPath, [source, destination]) => {
 
   let destinationFile = path.join(destination, path.basename(sourceFile));
 
-  const result = await cp(currentPath, [sourceFile, destinationFile])
-    .then(result => result)
-    .catch(result => result);
-
-  if (!result.error) {
-    await rm(currentPath, [sourceFile])
-      .then(result => { resolve(result); })
-      .catch(result => { reject(result); })
-  } else {
-    return Promise.reject(new Result(new OperationFailedError(result.error.message), false));
+  let result;
+  await cp(currentPath, [sourceFile, destinationFile])
+    .then(async (result) => {
+      result = await rm(currentPath, [sourceFile])
+        .then(() => new Result(null, true))
+        .catch(result => new Result(result.error, false))
+    })
+    .catch(result => Promise.reject(new Result(new OperationFailedError(result.error.message), false)));
+  if (result.error) {
+    Promise.reject(new Result(new OperationFailedError(result.error.message), false));
   }
+  return Promise.resolve(new Result(null, true));
 }
 
 export const rm = (currentPath, [source]) => {
