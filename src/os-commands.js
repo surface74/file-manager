@@ -19,7 +19,7 @@ export const os = ([dashedKey]) => {
     case 'cpus':
       const cpus = nodeOs.cpus();
       console.colorLog(color.green, `Total CPUs: ${cpus.length}`);
-      console.table(cpus.map(cpu => ({ Model: cpu.model, Speed: cpu.speed })));
+      console.table(cpus.map(cpu => ({ Model: cpu.model, Speed: cpu.speed / 1024 })));
       break;
     case 'homedir':
       // console.colorLog(color.green, `Home directory: ${join(process.env.HOMEDRIVE, process.env.HOMEPATH)}`);
