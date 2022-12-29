@@ -9,3 +9,30 @@ import * as path from 'node:path';
 export const getAbsolutePath = (basePath, pathTail) => {
   return path.isAbsolute(pathTail) ? pathTail : path.join(basePath, path.normalize(pathTail));
 }
+
+/**
+ * Calculate absolute path from relative
+ * @param {string} basePath The current directory
+ * @param {string} path The relative/absolute path
+ * @returns {string} The absolute path
+ */
+export const normalizePath = (basePath, folderPath) => {
+
+  if (folderPath.endsWith(':')) {
+    return `${folderPath}${path.sep}`;
+  }
+
+  if (folderPath.match(/^\.\.[\\/]?$/) !== null) {
+    return path.join(path.dirname(basePath), folderPath);
+  }
+
+  if (folderPath.match(/^[\\/]$/) !== null) {
+    return path.parse(basePath).root;
+  }
+
+  if (!path.isAbsolute(folderPath)) {
+    return path.join(basePath, folderPath);
+  }
+
+  return folderPath;
+}

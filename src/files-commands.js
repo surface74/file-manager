@@ -1,32 +1,28 @@
 import * as path from 'node:path';
-import { createReadStream, createWriteStream, constants, rm as fsRm, rename, access } from 'node:fs';
+import { createReadStream, createWriteStream, constants, access, rename } from 'node:fs';
+import { rm as fsRm } from 'node:fs/promises';
 import { stdout } from 'node:process';
 
 import { Result } from './result.js';
 import { InvalidArgumentError, OperationFailedError } from './error.js';
-
+import { getAbsolutePath, normalizePath } from './utils.js';
 
 export const cat = (currentPath, [fileName]) => {
-  return new Promise((resolve, reject) => {
-    if (!fileName) {
-      reject(new Result(new InvalidArgumentError(), false));
-    }
+  if (!fileName) {
+    return new Result(new InvalidArgumentError(), false);
+  }
+  const checkDotAhead = fileName.match(/^\.[\\/]?/);
+  if (checkDotAhead) {
+    fileName = fileName.slice(checkDotAhead[0].length);
+  }
 
-    const result = fileName.match(/^\.[\\/]?/);
-    if (result) {
-      fileName = fileName.slice(result[0].length);
-    }
+  let fullPath = getAbsolutePath(currentPath, path.normalize(fileName));
 
-    let fullPath = path.normalize(fileName);
-
-    if (!path.isAbsolute(fullPath)) {
-      fullPath = path.join(currentPath, fullPath);
-    }
-
+  return new Promise((resolve) => {
     const readStream = createReadStream(fullPath);
     readStream.pipe(stdout);
 
-    readStream.on('error', error => reject(new Result(new OperationFailedError(error.message), false)));
+    readStream.on('error', (error) => resolve(new Result(new OperationFailedError(error.message), false)));
 
     readStream.on('end', () => {
       console.log();
@@ -36,20 +32,20 @@ export const cat = (currentPath, [fileName]) => {
 };
 
 export const add = (currentPath, [fileName]) => {
-  return new Promise((resolve, reject) => {
-    if (!fileName) {
-      reject(new Result(new InvalidArgumentError(), false));
-    }
+  if (!fileName) {
+    return new Result(new InvalidArgumentError(), false);
+  }
 
-    if (path.isAbsolute(fileName) || fileName.match(/[\\/]+/)) {
-      reject(new Result(new InvalidArgumentError('file can be created in current path only'), false));
-    }
+  if (path.isAbsolute(fileName) || fileName.match(/[\\/]+/)) {
+    return new Result(new InvalidArgumentError('file can be created in current path only'), false);
+  }
 
-    let fullPath = path.join(currentPath, path.normalize(fileName));
+  let fullPath = getAbsolutePath(currentPath, fileName);
 
+  return new Promise((resolve) => {
     const writeStream = createWriteStream(fullPath, { flags: 'ax' });
 
-    writeStream.on('error', error => reject(new Result(new OperationFailedError(error.message), false)));
+    writeStream.on('error', error => resolve(new Result(new OperationFailedError(error.message), false)));
 
     writeStream.on('ready', () => {
       writeStream.close();
@@ -59,29 +55,26 @@ export const add = (currentPath, [fileName]) => {
 };
 
 export const rn = (currentPath, [originName, resultName]) => {
-  return new Promise((resolve, reject) => {
-    if (!resultName) {
-      reject(new Result(new InvalidArgumentError('must be passed 2 parameters'), false));
-    }
+  if (!resultName) {
+    return new Result(new InvalidArgumentError('must be passed 2 parameters'), false);
+  }
 
-    let sourceFile = path.normalize(originName);
-    if (!path.isAbsolute(sourceFile)) {
-      sourceFile = path.join(currentPath, sourceFile);
-    }
+  let sourceFile = getAbsolutePath(currentPath, originName);
 
-    let destinationFile = path.normalize(resultName);
-    if (destinationFile.match(/[\\/:]/)) {
-      reject(new Result(new InvalidArgumentError('2nd parameter have to be the file name only'), false));
-    }
-    destinationFile = path.join(path.dirname(sourceFile), destinationFile);
+  let destinationFile = path.normalize(resultName);
+  if (destinationFile.match(/[\\/:]/)) {
+    return new Result(new InvalidArgumentError('2nd parameter have to be the file name only'), false);
+  }
+  destinationFile = path.join(path.dirname(sourceFile), destinationFile);
 
+  return new Promise((resolve) => {
     access(destinationFile, constants.F_OK, (err) => {
       if (!err) {
-        reject(new Result(new InvalidArgumentError(`file ${destinationFile} already exists`), false));
+        resolve(new Result(new InvalidArgumentError(`file ${destinationFile} already exists`), false));
       } else {
         rename(sourceFile, destinationFile, (err) => {
           if (err) {
-            reject(new Result(new OperationFailedError(err.message), false));
+            resolve(new Result(new OperationFailedError(err.message), false));
           }
           resolve(new Result(null, true));
         });
@@ -91,79 +84,62 @@ export const rn = (currentPath, [originName, resultName]) => {
 };
 
 export const cp = (currentPath, [source, destination]) => {
-  return new Promise((resolve, reject) => {
-    if (!destination) {
-      reject(new Result(new InvalidArgumentError('must be passed 2 parameters'), false));
-    }
+  if (!destination) {
+    return new Result(new InvalidArgumentError('must be passed 2 parameters'), false);
+  }
 
-    let sourceFile = path.normalize(source);
-    if (!path.isAbsolute(sourceFile)) {
-      sourceFile = path.join(currentPath, sourceFile);
-    }
+  const sourceFile = getAbsolutePath(currentPath, source);
+  const destinationPath = normalizePath(currentPath, destination);
+  const destinationFile = path.join(destinationPath, path.basename(sourceFile));
 
-    let destinationFile = path.normalize(destination);
-    if (!path.isAbsolute(destinationFile)) {
-      destinationFile = path.join(currentPath, destinationFile);
-    }
-    const readStream = createReadStream(sourceFile, { flags: 'r' });
-    const writeStream = createWriteStream(destinationFile, { flags: 'wx' });
+  const readStream = createReadStream(sourceFile, { flags: 'r' });
+  const writeStream = createWriteStream(destinationFile, { flags: 'wx' });
 
+  return new Promise((resolve) => {
     readStream.pipe(writeStream);
-
-    writeStream.on('error', error =>
-      reject(new Result(new OperationFailedError(error.message), false)));
 
     writeStream.on('finish', () => {
       resolve(new Result(null, true))
     });
 
+    writeStream.on('error', error =>
+      resolve(new Result(new OperationFailedError(error.message), false)));
+
     readStream.on('error', error =>
-      reject(new Result(new OperationFailedError(error.message), false)));
+      resolve(new Result(new OperationFailedError(error.message), false)));
   })
 }
 
 export const mv = async (currentPath, [source, destination]) => {
   if (!destination) {
-    Promise.reject(new Result(new InvalidArgumentError('must be passed 2 parameters'), false));
+    return new Result(new InvalidArgumentError('must be passed 2 parameters'), false);
   }
 
-  let sourceFile = path.normalize(source);
-  if (!path.isAbsolute(sourceFile)) {
-    sourceFile = path.join(currentPath, sourceFile);
+  let sourceFile = getAbsolutePath(currentPath, source);
+
+  let { error } = await cp(currentPath, [sourceFile, destination]);
+  if (error) {
+    return new Result(new OperationFailedError(error.message), false);
   }
 
-  let destinationFile = path.join(destination, path.basename(sourceFile));
-
-  let removeResult;
-  await cp(currentPath, [sourceFile, destinationFile])
-    .then(async () => {
-      removeResult = await rm(currentPath, [sourceFile])
-        .then(() => new Result(null, true))
-        .catch(result => new Result(result.error, false))
-    })
-    .catch(result => Promise.reject(new Result(new OperationFailedError(result.error.message), false)));
-  if (removeResult.error) {
-    Promise.reject(new Result(new OperationFailedError(result.error.message), false));
+  ({ error } = await rm(currentPath, [sourceFile]));
+  if (error) {
+    return new Result(error, false);
   }
-  return Promise.resolve(new Result(null, true));
+  return new Result(null, true);
 }
 
-export const rm = (currentPath, [source]) => {
-  return new Promise((resolve, reject) => {
-    if (!source) {
-      reject(new Result(new InvalidArgumentError(), false));
-    }
+export const rm = async (currentPath, [source]) => {
+  if (!source) {
+    return new Result(new InvalidArgumentError(), false);
+  }
 
-    let fileToDelete = path.normalize(source);
-    if (!path.isAbsolute(fileToDelete)) {
-      fileToDelete = path.join(currentPath, fileToDelete);
-    }
+  const fileToDelete = getAbsolutePath(currentPath, source);
 
-    fsRm(fileToDelete, err => {
-      if (err) {
-        reject(new Result(new InvalidArgumentError(err.message), false));
-      }
-      resolve(new Result(null, true))
-    })
-  })
+  try {
+    await fsRm(fileToDelete);
+  } catch (error) {
+    return new Result(new OperationFailedError(error.message), false);
+  }
+  return new Result(null, true);
 }
