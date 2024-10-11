@@ -5,6 +5,8 @@ import Message from './message.js';
 import { getArgValue, getNormalizedArgs } from './utils/argument.js';
 import { color, colorLog } from './utils/colors.js';
 
+import * as navigation from './command/navigation.js';
+
 const app = () => {
   const currentUser = getArgValue(process.argv, 'username') || Message.ANONIMOUS_USER;
   Message.sayHi(currentUser);
@@ -23,11 +25,15 @@ const app = () => {
   rl.prompt();
 
   rl.on('line', async (input) => {
-    let error, args;
-    ({ error: error, data: args } = getNormalizedArgs(input));
+    let error, result, args;
+    ({ error, data: args } = getNormalizedArgs(input));
 
     if (!error && args.length) {
       const command = args.shift().toLowerCase();
+
+      if (navigation[command]) { // navigation
+        ({ error, data: result } = await navigation[command](args));
+      }
     }
 
     if (error) {
