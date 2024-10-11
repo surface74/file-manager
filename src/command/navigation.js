@@ -14,3 +14,13 @@ export const up = async () => {
   }
 }
 
+export const cd = async ([destination]) => {
+  try {
+    process.chdir(path.resolve(destination));
+
+    return makeResult(null, process.cwd());
+  } catch (error) {
+    return makeResult(new OperationFailedError(error.message), null);
+  }
+}
+
