@@ -26,20 +26,20 @@ const app = () => {
   rl.prompt();
 
   rl.on('line', async (input) => {
-    let error, result, args;
+    let error, args;
     ({ error, data: args } = getNormalizedArgs(input));
 
-    if (!error && args.length) {
-      const command = args.shift().toLowerCase();
+    try {
+      if (!error && args.length) {
+        const command = args.shift().toLowerCase();
 
-      if (navigation[command]) { // navigation
-        ({ error, data: result } = await navigation[command](args));
-      } else if (files[command]) { // files
-        ({ error } = await files[command](args));
+        if (navigation[command]) { // navigation
+          await navigation[command](args);
+        } else if (files[command]) { // files
+          await files[command](args);
+        }
       }
-    }
-
-    if (error) {
+    } catch (error) {
       colorLog(color.red, error.message);
     }
 
