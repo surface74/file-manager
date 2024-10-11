@@ -2,7 +2,8 @@ import * as readline from 'node:readline/promises';
 import { join } from 'node:path';
 
 import Message from './message.js';
-import { getArgValue } from './utils/argument.js';
+import { getArgValue, getNormalizedArgs } from './utils/argument.js';
+import { color, colorLog } from './utils/colors.js';
 
 const app = () => {
   const currentUser = getArgValue(process.argv, 'username') || Message.ANONIMOUS_USER;
@@ -13,14 +14,27 @@ const app = () => {
     output: process.stdout
   });
 
-  let currentPath = join(process.env.HOMEDRIVE || '', process.env.HOMEPATH || '');
-  Message.printCurrentPath(currentPath);
+  let homePath = join(process.env.HOMEDRIVE || '', process.env.HOMEPATH || '');
+
+  process.chdir(homePath);
+
+  Message.printCurrentPath();
 
   rl.prompt();
 
   rl.on('line', async (input) => {
+    let error, args;
+    ({ error: error, data: args } = getNormalizedArgs(input));
 
-    Message.printCurrentPath(currentPath);
+    if (!error && args.length) {
+      const command = args.shift().toLowerCase();
+    }
+
+    if (error) {
+      colorLog(color.red, error.message);
+    }
+
+    Message.printCurrentPath();
     rl.prompt();
   });
 

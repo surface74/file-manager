@@ -12,8 +12,8 @@ const Message = {
     colorLog(color.green, Message.WELCOME.replace('%%USER%%', userName));
   },
 
-  printCurrentPath(currentPath) {
-    console.log(Message.CURRENT_PATH.replace('%%CURRENT_PATH%%', setColor(currentPath, color.cyan)));
+  printCurrentPath() {
+    console.log(Message.CURRENT_PATH.replace('%%CURRENT_PATH%%', setColor(process.cwd(), color.cyan)));
   },
 
   sayGoodbye(userName) {
