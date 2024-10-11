@@ -6,6 +6,7 @@ import { getArgValue, getNormalizedArgs } from './utils/argument.js';
 import { color, colorLog } from './utils/colors.js';
 
 import * as navigation from './command/navigation.js';
+import * as files from './command/files.js';
 
 const app = () => {
   const currentUser = getArgValue(process.argv, 'username') || Message.ANONIMOUS_USER;
@@ -33,6 +34,8 @@ const app = () => {
 
       if (navigation[command]) { // navigation
         ({ error, data: result } = await navigation[command](args));
+      } else if (files[command]) { // files
+        ({ error } = await files[command](args));
       }
     }
 
