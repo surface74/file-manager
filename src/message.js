@@ -7,6 +7,9 @@ const Message = {
   OPERATION_FAILED: 'Operation failed',
   INVALID_INPUT: 'Invalid input',
   ANONIMOUS_USER: 'Anonimous',
+  NEED_2_ARGS: 'must be passed 2 parameters',
+  SECOND_ARG_FILE_NAME: '2nd parameter has to be the file name only',
+  FILE_EXISTS: 'file %%FILE%% already exists',
 
   sayHi(userName) {
     colorLog(color.green, Message.WELCOME.replace('%%USER%%', userName));
