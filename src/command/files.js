@@ -1,5 +1,5 @@
 import * as path from 'node:path';
-import { createReadStream } from 'node:fs';
+import { createReadStream, createWriteStream } from 'node:fs';
 import { stdout } from 'node:process';
 
 import { InvalidArgumentError, OperationFailedError } from '../error.js';
@@ -16,12 +16,28 @@ export const cat = ([readFileName]) => {
     const readStream = createReadStream(fullPath);
 
     readStream.pipe(stdout);
-
     readStream.on('error', (error) => reject(new OperationFailedError(error.message)));
-
     readStream.on('end', () => {
       console.log();
       resolve(null)
+    });
+  })
+};
+
+export const add = ([fileName]) => {
+  if (!fileName) {
+    throw new InvalidArgumentError();
+  }
+
+  let fullPath = path.join(process.cwd(), fileName);
+
+  return new Promise((resolve, reject) => {
+    const writeStream = createWriteStream(fullPath, { flags: 'ax' });
+
+    writeStream.on('error', (error) => reject(new OperationFailedError(error.message)));
+    writeStream.on('ready', () => {
+      writeStream.close();
+      resolve(true);
     });
   })
 };
