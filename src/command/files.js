@@ -6,6 +6,7 @@ import { InvalidArgumentError, OperationFailedError } from '../error.js';
 import Message from '../message.js';
 import { getAbsolutePath } from '../utils/path-utils.js';
 import { pipeline } from 'node:stream/promises';
+import { writeFile } from 'node:fs/promises';
 
 export const cat = ([readFileName]) => {
   if (!readFileName) {
@@ -26,22 +27,28 @@ export const cat = ([readFileName]) => {
   })
 };
 
-export const add = ([fileName]) => {
+export const add = async ([fileName]) => {
   if (!fileName) {
     throw new InvalidArgumentError();
   }
 
   let fullPath = path.join(process.cwd(), fileName);
+  // const writeStream = createWriteStream(fullPath, { flags: 'ax' });
 
-  return new Promise((resolve, reject) => {
-    const writeStream = createWriteStream(fullPath, { flags: 'ax' });
+  try {
+    await writeFile(fullPath, '', { flag: 'wx' });
+  } catch (error) {
+    throw new OperationFailedError(error.message);
+  }
+  // return new Promise((resolve, reject) => {
+  //   const writeStream = createWriteStream(fullPath, { flags: 'ax' });
 
-    writeStream.on('error', error => reject(new OperationFailedError(error.message)));
-    writeStream.on('ready', () => {
-      writeStream.close();
-      resolve(true);
-    });
-  })
+  //   writeStream.on('error', error => reject(new OperationFailedError(error.message)));
+  //   writeStream.on('ready', () => {
+  //     writeStream.close();
+  //     resolve(true);
+  //   });
+  // })
 };
 
 export const rn = ([originName, resultName]) => {
