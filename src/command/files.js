@@ -1,5 +1,5 @@
 import * as path from 'node:path';
-import { createReadStream, createWriteStream, constants, access } from 'node:fs';
+import { createReadStream, createWriteStream } from 'node:fs';
 import { stdout } from 'node:process';
 
 import { InvalidArgumentError, OperationFailedError } from '../error.js';

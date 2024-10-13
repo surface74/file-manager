@@ -1,17 +1,18 @@
 import { color, colorLog, setColor } from './utils/colors.js';
 
 const Message = {
-  WELCOME: 'Welcome to the File Manager, %%USER%%!',
+  ANONIMOUS_USER: 'Anonimous',
   BYE: 'Thank you for using File Manager, %%USER%%, goodbye!',
   CURRENT_PATH: 'You are currently in %%CURRENT_PATH%%',
-  OPERATION_FAILED: 'Operation failed',
-  INVALID_INPUT: 'Invalid input',
-  ANONIMOUS_USER: 'Anonimous',
-  NEED_2_ARGS: 'must be passed 2 parameters',
-  SECOND_ARG_FILE_NAME: '2nd parameter has to be the file name only',
   FILE_EXISTS: 'file %%FILE%% already exists',
-  ONLY_DASHED_OPTION_ALLOWED: 'the option has to start with "--"',
+  INVALID_INPUT: 'Invalid input',
+  INVALID_COMMAND: 'Invalid command',
   INVALID_OPTION: 'Invalid option %%OPTION%%',
+  NEED_2_ARGS: 'must be passed 2 parameters',
+  OPERATION_FAILED: 'Operation failed',
+  ONLY_DASHED_OPTION_ALLOWED: 'the option has to start with "--"',
+  SECOND_ARG_FILE_NAME: '2nd parameter has to be the file name only',
+  WELCOME: 'Welcome to the File Manager, %%USER%%!',
   WRONG_DOUBLE_QUOTERS: 'Wrong double quoters count/order',
 
   sayHi(userName) {

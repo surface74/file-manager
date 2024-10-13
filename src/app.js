@@ -9,6 +9,8 @@ import * as navigation from './command/navigation.js';
 import * as files from './command/files.js';
 import { os } from './command/os.js';
 import { hash } from './command/hash.js';
+import * as zip from './command/zip.js';
+import { InvalidArgumentError } from './error.js';
 
 const app = () => {
   const currentUser = getArgValue(process.argv, 'username') || Message.ANONIMOUS_USER;
@@ -29,6 +31,9 @@ const app = () => {
 
   rl.on('line', async (input) => {
     try {
+      if (!input)
+        throw new InvalidArgumentError();
+
       const args = getNormalizedArgs(input);
 
       if (args.length) {
@@ -40,14 +45,20 @@ const app = () => {
         } else if (files[command]) { // files
           await files[command](args);
 
+        } else if (zip[command]) { // zip
+          await zip[command](args);
+
         } else if ('os' === command) { // os
           os(args);
 
         } else if ('hash' === command) { // hash
           await hash(args);
 
+        } else if ('.exit' === command) {
+          rl.close();
+        } else {
+          throw new InvalidArgumentError(Message.INVALID_COMMAND);
         }
-
       }
     } catch (error) {
       colorLog(color.red, error.message);
