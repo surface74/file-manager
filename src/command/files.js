@@ -6,7 +6,7 @@ import { InvalidArgumentError, OperationFailedError } from '../error.js';
 import Message from '../message.js';
 import { getAbsolutePath } from '../utils/path-utils.js';
 import { pipeline } from 'node:stream/promises';
-import { stat, writeFile, rename } from 'node:fs/promises';
+import { stat, writeFile, rename, rm as rmNode } from 'node:fs/promises';
 
 export const cat = ([readFileName]) => {
   if (!readFileName) {
@@ -79,6 +79,20 @@ export const cp = async ([source, destination]) => {
 
   try {
     await pipeline(readStream, writeStream);
+  } catch (error) {
+    throw new OperationFailedError(error.message);
+  }
+}
+
+export const rm = async ([source]) => {
+  if (!source) {
+    throw new InvalidArgumentError();
+  }
+
+  const fileToDelete = getAbsolutePath(source);
+
+  try {
+    await rmNode(fileToDelete);
   } catch (error) {
     throw new OperationFailedError(error.message);
   }
