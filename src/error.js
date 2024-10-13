@@ -13,10 +13,3 @@ export class OperationFailedError extends Error {
     this.name = this.constructor.name;
   }
 }
-
-export class WrongDoubleQuotersError extends Error {
-  constructor(message) {
-    super(Message.WRONG_DOUBLE_QUOTERS + (message ? `: ${message}` : ''));
-    this.name = this.constructor.name;
-  }
-}

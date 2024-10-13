@@ -12,6 +12,7 @@ const Message = {
   FILE_EXISTS: 'file %%FILE%% already exists',
   ONLY_DASHED_OPTION_ALLOWED: 'the option has to start with "--"',
   INVALID_OPTION: 'Invalid option %%OPTION%%',
+  WRONG_DOUBLE_QUOTERS: 'Wrong double quoters count/order',
 
   sayHi(userName) {
     colorLog(color.green, Message.WELCOME.replace('%%USER%%', userName));

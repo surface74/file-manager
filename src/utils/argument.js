@@ -1,5 +1,4 @@
-import { WrongDoubleQuotersError, InvalidArgumentError } from '../error.js';
-import makeResult from './result.js'
+import { InvalidArgumentError } from '../error.js';
 import Message from '../message.js';
 
 export const getArgValue = (args, key) => {
@@ -11,13 +10,13 @@ export const getArgValue = (args, key) => {
 
 export function getNormalizedArgs(commandLine) {
   if (typeof commandLine !== 'string') {
-    return makeResult(new InvalidArgumentError(Message.MUST_BE_STRING), null);
+    throw new InvalidArgumentError(Message.MUST_BE_STRING);
   }
 
   const doubleQuotersCount = commandLine.match(/"/g);
   if (commandLine.match(/""/) ||
     doubleQuotersCount && doubleQuotersCount.length % 2 !== 0) {
-    return makeResult(new WrongDoubleQuotersError(), null);
+    throw new InvalidArgumentError(Message.WRONG_DOUBLE_QUOTERS);
   }
 
   let args = [];
@@ -42,5 +41,5 @@ export function getNormalizedArgs(commandLine) {
     args = cmd.split(' ').map(item => item.trim()).filter(item => item);
   }
 
-  return makeResult(null, args);
+  return args;
 }

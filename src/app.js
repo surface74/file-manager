@@ -8,6 +8,7 @@ import { color, colorLog } from './utils/colors.js';
 import * as navigation from './command/navigation.js';
 import * as files from './command/files.js';
 import { os } from './command/os.js';
+import { hash } from './command/hash.js';
 
 const app = () => {
   const currentUser = getArgValue(process.argv, 'username') || Message.ANONIMOUS_USER;
@@ -27,11 +28,10 @@ const app = () => {
   rl.prompt();
 
   rl.on('line', async (input) => {
-    let error, args;
-    ({ error, data: args } = getNormalizedArgs(input));
-
     try {
-      if (!error && args.length) {
+      const args = getNormalizedArgs(input);
+
+      if (args.length) {
         const command = args.shift().toLowerCase();
 
         if (navigation[command]) { // navigation
@@ -42,6 +42,9 @@ const app = () => {
 
         } else if ('os' === command) { // os
           os(args);
+
+        } else if ('hash' === command) { // hash
+          await hash(args);
 
         }
 
