@@ -41,17 +41,17 @@ export const add = async ([fileName]) => {
   }
 };
 
-export const rn = async ([originName, resultName]) => {
-  if (!originName || !resultName) {
+export const rn = async ([source, newName]) => {
+  if (!source || !newName) {
     throw new InvalidArgumentError(Message.NEED_2_ARGS);
   }
 
-  if (path.isAbsolute(resultName)) {
+  if (path.isAbsolute(newName)) {
     throw new InvalidArgumentError(Message.SECOND_ARG_FILE_NAME);
   }
 
-  let sourceFile = getAbsolutePath(originName);
-  let destinationFile = path.join(path.dirname(sourceFile), resultName);
+  let sourceFile = getAbsolutePath(source);
+  let destinationFile = path.join(path.dirname(sourceFile), newName);
 
   try {
     await stat(destinationFile);
@@ -93,6 +93,26 @@ export const rm = async ([source]) => {
 
   try {
     await rmNode(fileToDelete);
+  } catch (error) {
+    throw new OperationFailedError(error.message);
+  }
+}
+
+export const mv = async ([source, destination]) => {
+  if (!source || !destination) {
+    throw new InvalidArgumentError(Message.NEED_2_ARGS);
+  }
+
+  const sourceFile = getAbsolutePath(source);
+
+  try {
+    await cp([sourceFile, destination]);
+  } catch (error) {
+    throw new OperationFailedError(error.message);
+  }
+
+  try {
+    await rm([sourceFile])
   } catch (error) {
     throw new OperationFailedError(error.message);
   }
