@@ -107,12 +107,7 @@ export const mv = async ([source, destination]) => {
 
   try {
     await cp([sourceFile, destination]);
-  } catch (error) {
-    throw new OperationFailedError(error.message);
-  }
-
-  try {
-    await rm([sourceFile])
+    await rm([sourceFile]);
   } catch (error) {
     throw new OperationFailedError(error.message);
   }
