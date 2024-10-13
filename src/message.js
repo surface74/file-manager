@@ -10,6 +10,8 @@ const Message = {
   NEED_2_ARGS: 'must be passed 2 parameters',
   SECOND_ARG_FILE_NAME: '2nd parameter has to be the file name only',
   FILE_EXISTS: 'file %%FILE%% already exists',
+  ONLY_DASHED_OPTION_ALLOWED: 'the option has to start with "--"',
+  INVALID_OPTION: 'Invalid option %%OPTION%%',
 
   sayHi(userName) {
     colorLog(color.green, Message.WELCOME.replace('%%USER%%', userName));

@@ -7,6 +7,7 @@ import { color, colorLog } from './utils/colors.js';
 
 import * as navigation from './command/navigation.js';
 import * as files from './command/files.js';
+import { os } from './command/os.js';
 
 const app = () => {
   const currentUser = getArgValue(process.argv, 'username') || Message.ANONIMOUS_USER;
@@ -35,9 +36,15 @@ const app = () => {
 
         if (navigation[command]) { // navigation
           await navigation[command](args);
+
         } else if (files[command]) { // files
           await files[command](args);
+
+        } else if ('os' === command) { // os
+          os(args);
+
         }
+
       }
     } catch (error) {
       colorLog(color.red, error.message);
