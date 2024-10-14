@@ -11,7 +11,7 @@ import Message from '../message.js';
  */
 export const os = ([keyInfo]) => {
   if (!keyInfo?.startsWith('--')) {
-    throw new InvalidArgumentError(Message.ONLY_DASHED_OPTION_ALLOWED);
+    throw new InvalidArgumentError(Message.DASHED_OPTION_REQUIRED);
   }
 
   const key = keyInfo.slice(2).toLowerCase();

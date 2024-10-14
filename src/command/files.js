@@ -10,7 +10,7 @@ import { getAbsolutePath } from '../utils/path-utils.js';
 
 export const cat = ([readFileName]) => {
   if (!readFileName) {
-    throw new InvalidArgumentError();
+    throw new InvalidArgumentError(Message.FILE_NAME_REQUIRED);
   }
 
   const fullPath = getAbsolutePath(readFileName);
@@ -29,7 +29,7 @@ export const cat = ([readFileName]) => {
 
 export const add = async ([fileName]) => {
   if (!fileName) {
-    throw new InvalidArgumentError();
+    throw new InvalidArgumentError(Message.FILE_NAME_REQUIRED);
   }
 
   let fullPath = path.join(process.cwd(), fileName);
@@ -86,7 +86,7 @@ export const cp = async ([source, destination]) => {
 
 export const rm = async ([source]) => {
   if (!source) {
-    throw new InvalidArgumentError();
+    throw new InvalidArgumentError(Message.FILE_NAME_REQUIRED);
   }
 
   const fileToDelete = getAbsolutePath(source);
@@ -103,11 +103,9 @@ export const mv = async ([source, destination]) => {
     throw new InvalidArgumentError(Message.NEED_2_ARGS);
   }
 
-  const sourceFile = getAbsolutePath(source);
-
   try {
-    await cp([sourceFile, destination]);
-    await rm([sourceFile]);
+    await cp([source, destination]);
+    await rm([source]);
   } catch (error) {
     throw new OperationFailedError(error.message);
   }

@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 
 import { InvalidArgumentError, OperationFailedError } from '../error.js';
 import { getAbsolutePath } from '../utils/path-utils.js';
+import Message from '../message.js';
 
 /**
  *
@@ -11,7 +12,7 @@ import { getAbsolutePath } from '../utils/path-utils.js';
  */
 export const hash = async ([fileName]) => {
   if (!fileName) {
-    throw new InvalidArgumentError();
+    throw new InvalidArgumentError(Message.FILE_NAME_REQUIRED);
   }
   const fileToHash = getAbsolutePath(fileName);
 
