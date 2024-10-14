@@ -6,6 +6,7 @@ import { InvalidArgumentError, OperationFailedError } from '../error.js';
 import { getAbsolutePath } from '../utils/path-utils.js';
 import Message from '../message.js';
 import { pipeline } from 'node:stream/promises';
+import { access, constants } from 'node:fs/promises';
 
 const ZIP_EXTENTION = '.br';
 
@@ -20,6 +21,8 @@ export const compress = async ([source, resultPath]) => {
 
 
   try {
+    await access(sourceFile, constants.R_OK);
+
     const readStream = createReadStream(sourceFile);
     const transformStream = createBrotliCompress();
     const writeStream = createWriteStream(fileToCompess, { flags: 'wx' });
@@ -28,17 +31,6 @@ export const compress = async ([source, resultPath]) => {
   } catch (error) {
     throw new OperationFailedError(error.message);
   }
-  // return new Promise((resolve, reject) => {
-  //   const readStream = createReadStream(sourceFile);
-  //   const transformStream = createBrotliCompress();
-  //   const writeStream = createWriteStream(fileToCompess, { flags: 'wx' });
-
-  //   readStream.pipe(transformStream).pipe(writeStream);
-  //   readStream.on('error', error => reject(new OperationFailedError(error.message)));
-  //   readStream.on('end', () => resolve(null));
-
-  //   writeStream.on('error', error => reject(new OperationFailedError(error.message)));
-  // });
 };
 
 export const decompress = ([source, resultPath]) => {
