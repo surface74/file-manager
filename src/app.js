@@ -56,6 +56,7 @@ const app = () => {
 
         } else if ('.exit' === command) {
           rl.close();
+
         } else {
           throw new InvalidArgumentError(Message.INVALID_COMMAND);
         }

@@ -33,7 +33,7 @@ export const compress = async ([source, resultPath]) => {
   }
 };
 
-export const decompress = ([source, resultPath]) => {
+export const decompress = async ([source, resultPath]) => {
   if (!source || !resultPath) {
     throw new InvalidArgumentError(Message.NEED_2_ARGS);
   }
@@ -42,15 +42,13 @@ export const decompress = ([source, resultPath]) => {
   let decompressPath = getAbsolutePath(resultPath);
   let fileToDecompess = path.join(decompressPath, path.parse(sourceFile).name);
 
-  return new Promise((resolve, reject) => {
+  try {
     const readStream = createReadStream(sourceFile);
     const transformStream = createBrotliDecompress();
     const writeStream = createWriteStream(fileToDecompess, { flags: 'wx' });
 
-    readStream.pipe(transformStream).pipe(writeStream);
-    readStream.on('error', error => reject(new OperationFailedError(error.message)));
-    readStream.on('end', () => resolve(null));
-
-    writeStream.on('error', error => reject(new OperationFailedError(error.message)));
-  });
+    await pipeline(readStream, transformStream, writeStream);
+  } catch (error) {
+    throw new OperationFailedError(error.message);
+  }
 };
