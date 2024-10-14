@@ -1,0 +1,12 @@
+{
+  "name": "file-manager",
+  "version": "1.0.0",
+  "description": "RS School NodeJS task#2",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "author": "Muliarenka Siarhei",
+  "license": "ISC"
+}
