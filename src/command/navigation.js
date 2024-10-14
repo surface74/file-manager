@@ -3,7 +3,7 @@ import { readdir } from 'node:fs/promises';
 
 import { OperationFailedError } from '../error.js';
 
-export const up = async () => {
+export const up = () => {
   try {
     process.chdir(path.dirname(process.cwd()));
   } catch (error) {
@@ -11,7 +11,7 @@ export const up = async () => {
   }
 }
 
-export const cd = async ([destination]) => {
+export const cd = ([destination]) => {
   try {
     process.chdir(path.resolve(destination));
   } catch (error) {

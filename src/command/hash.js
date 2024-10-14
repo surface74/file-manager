@@ -5,6 +5,10 @@ import { createHash } from 'node:crypto';
 import { InvalidArgumentError, OperationFailedError } from '../error.js';
 import { getAbsolutePath } from '../utils/path-utils.js';
 
+/**
+ *
+ * @param {string[]} param0
+ */
 export const hash = async ([fileName]) => {
   if (!fileName) {
     throw new InvalidArgumentError();

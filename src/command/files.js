@@ -1,12 +1,12 @@
 import * as path from 'node:path';
 import { createReadStream, createWriteStream } from 'node:fs';
+import { stat, writeFile, rename, rm as rmNode } from 'node:fs/promises';
 import { stdout } from 'node:process';
+import { pipeline } from 'node:stream/promises';
 
 import { InvalidArgumentError, OperationFailedError } from '../error.js';
 import Message from '../message.js';
 import { getAbsolutePath } from '../utils/path-utils.js';
-import { pipeline } from 'node:stream/promises';
-import { stat, writeFile, rename, rm as rmNode } from 'node:fs/promises';
 
 export const cat = ([readFileName]) => {
   if (!readFileName) {

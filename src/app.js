@@ -21,9 +21,7 @@ const app = () => {
     output: process.stdout
   });
 
-  let homePath = join(process.env.HOMEDRIVE || '', process.env.HOMEPATH || '');
-
-  process.chdir(homePath);
+  process.chdir(join(process.env.HOMEDRIVE || '', process.env.HOMEPATH || ''));
 
   Message.printCurrentPath();
 
@@ -39,19 +37,19 @@ const app = () => {
       if (args.length) {
         const command = args.shift().toLowerCase();
 
-        if (navigation[command]) { // navigation
+        if (navigation[command]) {
           await navigation[command](args);
 
-        } else if (files[command]) { // files
+        } else if (files[command]) {
           await files[command](args);
 
-        } else if (zip[command]) { // zip
+        } else if (zip[command]) {
           await zip[command](args);
 
-        } else if ('os' === command) { // os
+        } else if ('os' === command) {
           os(args);
 
-        } else if ('hash' === command) { // hash
+        } else if ('hash' === command) {
           await hash(args);
 
         } else if ('.exit' === command) {

@@ -5,6 +5,10 @@ import { color, colorLog } from '../utils/colors.js';
 import { InvalidArgumentError } from '../error.js';
 import Message from '../message.js';
 
+/**
+ *
+ * @param {string[]} param0
+ */
 export const os = ([keyInfo]) => {
   if (!keyInfo?.startsWith('--')) {
     throw new InvalidArgumentError(Message.ONLY_DASHED_OPTION_ALLOWED);

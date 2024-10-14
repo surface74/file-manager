@@ -5,8 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js",
-    "debug": "node --inspect src/index.js"
+    "start": "node src/index.js"
   },
   "author": "Muliarenka Siarhei",
   "license": "ISC"

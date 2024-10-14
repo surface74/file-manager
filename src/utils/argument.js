@@ -8,6 +8,11 @@ export const getArgValue = (args, key) => {
   return pair[0] ? pair[0].split('=')[1] : null;
 }
 
+/**
+ *
+ * @param {string} commandLine
+ * @returns {string[]}
+ */
 export function getNormalizedArgs(commandLine) {
   if (typeof commandLine !== 'string') {
     throw new InvalidArgumentError(Message.MUST_BE_STRING);
