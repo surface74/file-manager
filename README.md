@@ -1,4 +1,4 @@
-# File-manager
+# File Manager
 RS School NodeJS 2024Q3 task#2
 
 ## Features
